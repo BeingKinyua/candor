@@ -24,7 +24,7 @@ import { Button, Badge } from '@/src/components/ui/Controls';
 
 export const OverviewView: React.FC = () => {
   const { navigate, openAiDrawer } = useNavigation();
-  const { user } = useAuth();
+  const { user, can } = useAuth();
   const [, setTick] = useState(0);
 
   useEffect(() => {
@@ -65,35 +65,41 @@ export const OverviewView: React.FC = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="ai"
-            size="sm"
-            onClick={() => openAiDrawer('Generate executive daily briefing for today’s campaign schedule')}
-            icon={<Sparkles className="w-3.5 h-3.5 text-[#00DF81]" />}
-          >
-            AI Daily Brief
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => navigate('/field/capture')}
-            icon={<Radio className="w-3.5 h-3.5" />}
-          >
-            Capture Field Form
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => navigate('/people')}
-            icon={<Plus className="w-3.5 h-3.5" />}
-          >
-            New Contact
-          </Button>
+          {can('ai.access') && (
+            <Button
+              variant="ai"
+              size="sm"
+              onClick={() => openAiDrawer('Generate executive daily briefing for today’s campaign schedule')}
+              icon={<Sparkles className="w-3.5 h-3.5 text-[#00DF81]" />}
+            >
+              AI Daily Brief
+            </Button>
+          )}
+          {can('field.capture') && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => navigate('/field/capture')}
+              icon={<Radio className="w-3.5 h-3.5" />}
+            >
+              Capture Field Form
+            </Button>
+          )}
+          {can('people.create') && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => navigate('/people')}
+              icon={<Plus className="w-3.5 h-3.5" />}
+            >
+              New Contact
+            </Button>
+          )}
         </div>
       </div>
 
-      {/* Critical Overdue / Verification Banner if applicable */}
-      {(overdueCommitments.length > 0 || pendingSubmissions.length > 0) && (
+      {/* Critical Overdue / Verification Banner if authorized */}
+      {(can('field.review') || can('commitments.read')) && (overdueCommitments.length > 0 || pendingSubmissions.length > 0) && (
         <div className="p-4 rounded-2xl bg-gradient-to-r from-[#E05252]/15 via-[#08453A]/60 to-[#032221] border border-[#E05252]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
           <div className="flex items-center space-x-3">
             <div className="p-2 rounded-xl bg-[#E05252]/20 text-[#E05252] border border-[#E05252]/30">
@@ -109,77 +115,91 @@ export const OverviewView: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center space-x-2 shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate('/field/submissions')}
-              className="text-xs"
-            >
-              Verify Field Queue ({pendingSubmissions.length})
-            </Button>
-            <Button
-              variant="danger"
-              size="sm"
-              onClick={() => navigate('/commitments')}
-              className="text-xs"
-            >
-              Resolve Overdue ({overdueCommitments.length})
-            </Button>
+            {can('field.review') && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/field/submissions')}
+                className="text-xs"
+              >
+                Verify Field Queue ({pendingSubmissions.length})
+              </Button>
+            )}
+            {can('commitments.read') && (
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={() => navigate('/commitments')}
+                className="text-xs"
+              >
+                Resolve Overdue ({overdueCommitments.length})
+              </Button>
+            )}
           </div>
         </div>
       )}
 
-      {/* 5-Column Operational KPI Bento Strip */}
+      {/* Operational KPI Bento Strip (Permission-Filtered) */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
-        <MetricCard
-          label="Key People"
-          value={people.length}
-          change="+14% this week"
-          changeType="positive"
-          subtext="High-influence nodes"
-          icon={<Users className="w-5 h-5" />}
-          onClick={() => navigate('/people')}
-        />
+        {can('people.read') && (
+          <MetricCard
+            label="Key People"
+            value={people.length}
+            change="+14% this week"
+            changeType="positive"
+            subtext="High-influence nodes"
+            icon={<Users className="w-5 h-5" />}
+            onClick={() => navigate('/people')}
+          />
+        )}
 
-        <MetricCard
-          label="Upcoming Meetings"
-          value={upcomingMeetings.length}
-          change="3 Today"
-          changeType="neutral"
-          subtext="Strategic alignments"
-          icon={<Calendar className="w-5 h-5" />}
-          onClick={() => navigate('/meetings')}
-        />
+        {can('meetings.read') && (
+          <MetricCard
+            label="Upcoming Meetings"
+            value={upcomingMeetings.length}
+            change="3 Today"
+            changeType="neutral"
+            subtext="Strategic alignments"
+            icon={<Calendar className="w-5 h-5" />}
+            onClick={() => navigate('/meetings')}
+          />
+        )}
 
-        <MetricCard
-          label="Active Pledges"
-          value={commitments.filter((c) => c.status === 'pending' || c.status === 'overdue').length}
-          change={`${overdueCommitments.length} Overdue`}
-          changeType={overdueCommitments.length > 0 ? 'negative' : 'positive'}
-          subtext="Accountability tracker"
-          icon={<CheckSquare className="w-5 h-5" />}
-          onClick={() => navigate('/commitments')}
-        />
+        {can('commitments.read') && (
+          <MetricCard
+            label="Active Pledges"
+            value={commitments.filter((c) => c.status === 'pending' || c.status === 'overdue').length}
+            change={`${overdueCommitments.length} Overdue`}
+            changeType={overdueCommitments.length > 0 ? 'negative' : 'positive'}
+            subtext="Accountability tracker"
+            icon={<CheckSquare className="w-5 h-5" />}
+            onClick={() => navigate('/commitments')}
+          />
+        )}
 
-        <MetricCard
-          label="Field Verification"
-          value={pendingSubmissions.length}
-          change="97.4% OCR Conf."
-          changeType="positive"
-          subtext="Pending human audit"
-          icon={<Radio className="w-5 h-5" />}
-          onClick={() => navigate('/field/submissions')}
-        />
+        {(can('field.submissions.read') || can('field.capture') || can('field.review')) && (
+          <MetricCard
+            label="Field Verification"
+            value={pendingSubmissions.length}
+            change="97.4% OCR Conf."
+            changeType="positive"
+            subtext="Pending human audit"
+            icon={<Radio className="w-5 h-5" />}
+            onClick={() => navigate('/field/submissions')}
+          />
+        )}
 
-        <MetricCard
-          label="Active Issues"
-          value={issues.filter((i) => i.status !== 'resolved').length}
-          change={`${criticalIssues.length} Critical`}
-          changeType={criticalIssues.length > 0 ? 'negative' : 'neutral'}
-          subtext="Escalations active"
-          icon={<AlertOctagon className="w-5 h-5" />}
-          onClick={() => navigate('/issues')}
-        />
+        {can('issues.read') && (
+          <MetricCard
+            label="Active Issues"
+            value={issues.filter((i) => i.status !== 'resolved').length}
+            change={`${criticalIssues.length} Critical`}
+            changeType={criticalIssues.length > 0 ? 'negative' : 'neutral'}
+            subtext="Escalations active"
+            icon={<AlertOctagon className="w-5 h-5" />}
+            onClick={() => navigate('/issues')}
+          />
+        )}
       </div>
 
       {/* Main Command Bento Grid */}
@@ -353,29 +373,31 @@ export const OverviewView: React.FC = () => {
             </div>
           </BentoCard>
 
-          {/* Live Immutable Audit Stream Snippet */}
-          <BentoCard
-            title="Recent Command Audit Stream"
-            eyebrow="Cryptographic Ledger"
-            icon={<ShieldCheck className="w-4 h-4 text-[#00DF81]" />}
-            action={
-              <Button variant="ghost" size="sm" onClick={() => navigate('/settings/audit')}>
-                Full Audit
-              </Button>
-            }
-          >
-            <div className="space-y-2 text-xs">
-              {auditLogs.slice(0, 3).map((log) => (
-                <div key={log.id} className="p-2.5 rounded-lg bg-[#032221]/80 border border-[#AACBC4]/10 space-y-1">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="font-semibold text-[#F1F7F6]">{log.actorName}</span>
-                    <span className="text-[10px] text-[#707D7D] font-mono">{log.domain}</span>
+          {/* Live Immutable Audit Stream Snippet (Administrative Only) */}
+          {can('audit.read') && (
+            <BentoCard
+              title="Recent Command Audit Stream"
+              eyebrow="Cryptographic Ledger"
+              icon={<ShieldCheck className="w-4 h-4 text-[#00DF81]" />}
+              action={
+                <Button variant="ghost" size="sm" onClick={() => navigate('/settings/audit')}>
+                  Full Audit
+                </Button>
+              }
+            >
+              <div className="space-y-2 text-xs">
+                {auditLogs.slice(0, 3).map((log) => (
+                  <div key={log.id} className="p-2.5 rounded-lg bg-[#032221]/80 border border-[#AACBC4]/10 space-y-1">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="font-semibold text-[#F1F7F6]">{log.actorName}</span>
+                      <span className="text-[10px] text-[#707D7D] font-mono">{log.domain}</span>
+                    </div>
+                    <p className="text-[11px] text-[#AACBC4]">{log.action}: <strong className="text-[#F1F7F6]">{log.targetName}</strong></p>
                   </div>
-                  <p className="text-[11px] text-[#AACBC4]">{log.action}: <strong className="text-[#F1F7F6]">{log.targetName}</strong></p>
-                </div>
-              ))}
-            </div>
-          </BentoCard>
+                ))}
+              </div>
+            </BentoCard>
+          )}
 
         </div>
       </div>

@@ -85,12 +85,12 @@ export const FloatingSidebar: React.FC<FloatingSidebarProps> = ({
     return () => unsubscribe();
   }, []);
 
-  const rolesList: Role[] = [
-    'Admin',
-    'Campaign Director',
-    'Operations Lead',
-    'Intelligence Analyst',
-    'Field Mobilizer',
+  const rolesList = [
+    { id: 'administrator', label: 'Administrator' },
+    { id: 'operations_manager', label: 'Operations Manager' },
+    { id: 'field_officer', label: 'Field Officer' },
+    { id: 'reviewer', label: 'Reviewer' },
+    { id: 'viewer', label: 'Observer / Viewer' },
   ];
 
   const isActive = (path: string) => {
@@ -98,7 +98,14 @@ export const FloatingSidebar: React.FC<FloatingSidebarProps> = ({
     return currentPath.startsWith(path);
   };
 
-  const hasAdminAccess = can('team:manage') || can('roles:manage') || can('security:audit') || can('users:manage');
+  const hasAdminAccess =
+    can('team.read') ||
+    can('team.manage') ||
+    can('team.invite') ||
+    can('team:manage') ||
+    can('roles:manage') ||
+    can('security:audit') ||
+    can('audit.read');
 
   // Compute initials for user avatar
   const getInitials = (name?: string) => {
@@ -336,7 +343,7 @@ export const FloatingSidebar: React.FC<FloatingSidebarProps> = ({
         </div>
 
         {/* Section: Field (Special Treatment with Operational Callout) */}
-        {can('field:view') && (
+        {(can('field:view') || can('field.capture') || can('field.submissions.read')) && (
           <div className="space-y-1">
             {isEffectiveExpanded && (
               <p className="px-2.5 text-[9px] font-semibold tracking-wider text-[#00DF81]/80 uppercase mb-1 flex items-center justify-between">
@@ -648,25 +655,31 @@ export const FloatingSidebar: React.FC<FloatingSidebarProps> = ({
             </div>
 
             <div className="space-y-1">
-              {rolesList.map((r) => (
-                <button
-                  key={r}
-                  onClick={() => {
-                    switchRole(r);
-                    setShowUserMenu(false);
-                  }}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between cursor-pointer hover:cursor-pointer ${
-                    user?.role === r
-                      ? 'bg-[#00DF81]/20 text-[#00DF81] font-semibold'
-                      : 'text-[#F1F7F6] hover:bg-[#08453A]'
-                  }`}
-                >
-                  <span className="truncate">{r}</span>
-                  {user?.role === r && (
-                    <span className="text-[10px] text-[#00DF81] font-mono shrink-0 ml-1">Active</span>
-                  )}
-                </button>
-              ))}
+              {rolesList.map((r) => {
+                const isSelected =
+                  user?.role?.toLowerCase().includes(r.id.split('_')[0]) ||
+                  user?.role?.toLowerCase() === r.label.toLowerCase() ||
+                  (user as any)?.roleId === r.id;
+                return (
+                  <button
+                    key={r.id}
+                    onClick={() => {
+                      switchRole(r.id);
+                      setShowUserMenu(false);
+                    }}
+                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between cursor-pointer hover:cursor-pointer ${
+                      isSelected
+                        ? 'bg-[#00DF81]/20 text-[#00DF81] font-semibold'
+                        : 'text-[#F1F7F6] hover:bg-[#08453A]'
+                    }`}
+                  >
+                    <span className="truncate">{r.label}</span>
+                    {isSelected && (
+                      <span className="text-[10px] text-[#00DF81] font-mono shrink-0 ml-1">Active</span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             <div className="pt-2 mt-2 border-t border-[#AACBC4]/15">

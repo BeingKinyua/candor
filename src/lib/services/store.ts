@@ -82,7 +82,7 @@ class CampaignStore {
     this.issues = getStored(STORAGE_KEYS.ISSUES, INITIAL_ISSUES);
     this.auditLogs = getStored(STORAGE_KEYS.AUDIT, INITIAL_AUDIT_LOGS);
     this.notifications = getStored(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);
-    this.currentUser = getStored(STORAGE_KEYS.CURRENT_USER, INITIAL_USERS[0]);
+    this.currentUser = getStored<User | null>(STORAGE_KEYS.CURRENT_USER, null);
   }
 
   public subscribe(listener: () => void): () => void {

@@ -19,7 +19,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
   const { navigate, openAiDrawer, openCommandPalette } = useNavigation();
-  const { user } = useAuth();
+  const { user, can, logout } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
 
@@ -201,87 +201,110 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
                 <span>◉ Overview</span>
               </button>
 
-              <p className="px-3 pt-3 text-[10px] font-semibold tracking-wider text-[#AACBC4]/50 uppercase mb-1">
-                Operations
-              </p>
-              <button
-                onClick={() => {
-                  navigate('/people');
-                  setShowMobileMenu(false);
-                }}
-                className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-[#F1F7F6] hover:bg-[#08453A] border border-transparent hover:border-[#00DF81]/30 transition-colors cursor-pointer hover:cursor-pointer"
-              >
-                ♙ People Directory
-              </button>
-              <button
-                onClick={() => {
-                  navigate('/meetings');
-                  setShowMobileMenu(false);
-                }}
-                className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-[#F1F7F6] hover:bg-[#08453A] border border-transparent hover:border-[#00DF81]/30 transition-colors cursor-pointer hover:cursor-pointer"
-              >
-                ◷ Meetings & Strategy
-              </button>
-              <button
-                onClick={() => {
-                  navigate('/commitments');
-                  setShowMobileMenu(false);
-                }}
-                className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-[#F1F7F6] hover:bg-[#08453A] border border-transparent hover:border-[#00DF81]/30 transition-colors cursor-pointer hover:cursor-pointer flex items-center justify-between"
-              >
-                <span>✓ Commitments Tracker</span>
-                <span className="px-2 py-0.5 text-[10px] rounded-full bg-[#08453A] text-[#00DF81] font-mono">4</span>
-              </button>
+              {(can('people.read') || can('meetings.read') || can('commitments.read')) && (
+                <p className="px-3 pt-3 text-[10px] font-semibold tracking-wider text-[#AACBC4]/50 uppercase mb-1">
+                  Operations
+                </p>
+              )}
+              {can('people.read') && (
+                <button
+                  onClick={() => {
+                    navigate('/people');
+                    setShowMobileMenu(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-[#F1F7F6] hover:bg-[#08453A] border border-transparent hover:border-[#00DF81]/30 transition-colors cursor-pointer hover:cursor-pointer"
+                >
+                  ♙ People Directory
+                </button>
+              )}
+              {can('meetings.read') && (
+                <button
+                  onClick={() => {
+                    navigate('/meetings');
+                    setShowMobileMenu(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-[#F1F7F6] hover:bg-[#08453A] border border-transparent hover:border-[#00DF81]/30 transition-colors cursor-pointer hover:cursor-pointer"
+                >
+                  ◷ Meetings & Strategy
+                </button>
+              )}
+              {can('commitments.read') && (
+                <button
+                  onClick={() => {
+                    navigate('/commitments');
+                    setShowMobileMenu(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-[#F1F7F6] hover:bg-[#08453A] border border-transparent hover:border-[#00DF81]/30 transition-colors cursor-pointer hover:cursor-pointer flex items-center justify-between"
+                >
+                  <span>✓ Commitments Tracker</span>
+                  <span className="px-2 py-0.5 text-[10px] rounded-full bg-[#08453A] text-[#00DF81] font-mono">4</span>
+                </button>
+              )}
 
-              <p className="px-3 pt-3 text-[10px] font-semibold tracking-wider text-[#00DF81]/80 uppercase mb-1">
-                Field Operations
-              </p>
-              <button
-                onClick={() => {
-                  navigate('/field');
-                  setShowMobileMenu(false);
-                }}
-                className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#08453A]/50 text-[#00DF81] border border-[#00DF81]/30 hover:bg-[#08453A] transition-colors cursor-pointer hover:cursor-pointer flex items-center justify-between"
-              >
-                <span>◎ Field Operations</span>
-                <span className="px-2 py-0.5 text-[10px] rounded-full bg-[#00DF81]/20 text-[#00DF81] font-mono">12 pending</span>
-              </button>
+              {(can('field.capture') || can('field.submissions.read')) && (
+                <>
+                  <p className="px-3 pt-3 text-[10px] font-semibold tracking-wider text-[#00DF81]/80 uppercase mb-1">
+                    Field Operations
+                  </p>
+                  <button
+                    onClick={() => {
+                      navigate('/field');
+                      setShowMobileMenu(false);
+                    }}
+                    className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold bg-[#08453A]/50 text-[#00DF81] border border-[#00DF81]/30 hover:bg-[#08453A] transition-colors cursor-pointer hover:cursor-pointer flex items-center justify-between"
+                  >
+                    <span>◎ Field Operations</span>
+                    <span className="px-2 py-0.5 text-[10px] rounded-full bg-[#00DF81]/20 text-[#00DF81] font-mono">live</span>
+                  </button>
+                </>
+              )}
 
-              <p className="px-3 pt-3 text-[10px] font-semibold tracking-wider text-[#AACBC4]/50 uppercase mb-1">
-                Intelligence
-              </p>
-              <button
-                onClick={() => {
-                  navigate('/knowledge');
-                  setShowMobileMenu(false);
-                }}
-                className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-[#F1F7F6] hover:bg-[#08453A] border border-transparent hover:border-[#00DF81]/30 transition-colors cursor-pointer hover:cursor-pointer"
-              >
-                ◫ Knowledge Vault
-              </button>
-              <button
-                onClick={() => {
-                  navigate('/issues');
-                  setShowMobileMenu(false);
-                }}
-                className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-[#F1F7F6] hover:bg-[#08453A] border border-transparent hover:border-[#00DF81]/30 transition-colors cursor-pointer hover:cursor-pointer flex items-center justify-between"
-              >
-                <span>⚠ Issues Desk</span>
-                <span className="px-2 py-0.5 text-[10px] rounded-full bg-[#E05252]/20 text-[#E05252] font-mono">3</span>
-              </button>
+              {can('knowledge.read') && (
+                <>
+                  <p className="px-3 pt-3 text-[10px] font-semibold tracking-wider text-[#AACBC4]/50 uppercase mb-1">
+                    Intelligence
+                  </p>
+                  <button
+                    onClick={() => {
+                      navigate('/knowledge');
+                      setShowMobileMenu(false);
+                    }}
+                    className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-[#F1F7F6] hover:bg-[#08453A] border border-transparent hover:border-[#00DF81]/30 transition-colors cursor-pointer hover:cursor-pointer"
+                  >
+                    ◫ Knowledge Vault
+                  </button>
+                </>
+              )}
 
-              <p className="px-3 pt-3 text-[10px] font-semibold tracking-wider text-[#AACBC4]/50 uppercase mb-1">
-                Administration
-              </p>
-              <button
-                onClick={() => {
-                  navigate('/settings/team');
-                  setShowMobileMenu(false);
-                }}
-                className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-[#AACBC4] hover:text-[#F1F7F6] hover:bg-[#08453A] transition-colors cursor-pointer hover:cursor-pointer"
-              >
-                ⚙ Settings & Team Governance
-              </button>
+              {can('issues.read') && (
+                <button
+                  onClick={() => {
+                    navigate('/issues');
+                    setShowMobileMenu(false);
+                  }}
+                  className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-[#F1F7F6] hover:bg-[#08453A] border border-transparent hover:border-[#00DF81]/30 transition-colors cursor-pointer hover:cursor-pointer flex items-center justify-between"
+                >
+                  <span>⚠ Issues Desk</span>
+                  <span className="px-2 py-0.5 text-[10px] rounded-full bg-[#E05252]/20 text-[#E05252] font-mono">3</span>
+                </button>
+              )}
+
+              {(can('team.read') || can('team.manage') || can('audit.read')) && (
+                <>
+                  <p className="px-3 pt-3 text-[10px] font-semibold tracking-wider text-[#AACBC4]/50 uppercase mb-1">
+                    Administration
+                  </p>
+                  <button
+                    onClick={() => {
+                      navigate('/settings');
+                      setShowMobileMenu(false);
+                    }}
+                    className="w-full text-left px-4 py-2.5 rounded-xl text-sm font-medium text-[#AACBC4] hover:text-[#F1F7F6] hover:bg-[#08453A] transition-colors cursor-pointer hover:cursor-pointer"
+                  >
+                    ⚙ Settings & Governance
+                  </button>
+                </>
+              )}
             </div>
           </div>
 
@@ -298,6 +321,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
             </div>
             <button
               onClick={() => {
+                logout();
                 navigate('/login');
                 setShowMobileMenu(false);
               }}
