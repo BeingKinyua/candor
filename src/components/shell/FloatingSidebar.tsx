@@ -121,7 +121,7 @@ export const FloatingSidebar: React.FC<FloatingSidebarProps> = ({
         <div
           onClick={() => navigate('/overview')}
           className="flex items-center space-x-2.5 cursor-pointer hover:cursor-pointer group overflow-hidden"
-          title="NYAYO Campaign Workspace"
+          title="CANDOR"
         >
           {/* Logo ✦ mark */}
           <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#002DF8] via-[#03624C] to-[#00DF81] p-[1.5px] shadow-md shadow-[#00DF81]/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-200">
