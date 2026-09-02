@@ -138,10 +138,7 @@ export const FloatingSidebar: React.FC<FloatingSidebarProps> = ({
           >
             <div className="flex items-center space-x-1.5">
               <span className="font-serif-heading text-base font-bold tracking-wider text-[#F1F7F6] leading-none">
-                NYAYO
-              </span>
-              <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-[#00DF81]/15 text-[#00DF81] font-semibold border border-[#00DF81]/30">
-                PRO
+                CANDOR
               </span>
             </div>
             <span className="text-[10px] text-[#AACBC4]/80 tracking-wide mt-0.5 truncate font-medium">
@@ -164,7 +161,7 @@ export const FloatingSidebar: React.FC<FloatingSidebarProps> = ({
       </div>
 
       {/* 2. Navigation Items (Categorized with subtle section headings) */}
-      <div className="flex-1 overflow-y-auto space-y-4 py-1 pr-1 scrollbar-thin">
+      <div className="flex-1 space-y-4 py-1 pr-1 scrollbar-thin">
         {/* Section: Command Center */}
         <div className="space-y-1">
           {isEffectiveExpanded && (
