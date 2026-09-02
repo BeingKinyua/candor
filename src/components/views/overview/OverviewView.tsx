@@ -59,7 +59,7 @@ export const OverviewView: React.FC = () => {
             Operational Command Center
           </h1>
           <p className="text-xs md:text-sm text-[#AACBC4] mt-0.5">
-            Welcome back, {user?.name}. Regional telemetry and action items across 6 electoral sectors.
+            Welcome back, {user?.name}.
           </p>
         </div>
 

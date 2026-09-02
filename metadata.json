@@ -1,5 +1,5 @@
 {
-  "name": "Vantage Campaign Operations",
+  "name": "Candor - Your Campaign PA",
   "description": "Secure, role-based campaign operations command centre and intelligence platform.",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

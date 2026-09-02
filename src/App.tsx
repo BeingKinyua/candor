@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from '@/src/lib/auth/authContext';
 import { NavigationProvider, useNavigation } from '@/src/lib/router/navigationContext';
 import { FloatingSidebar } from '@/src/components/shell/FloatingSidebar';
 import { Navbar } from '@/src/components/shell/Navbar';
+import { Breadcrumbs } from '@/src/components/shell/Breadcrumbs';
 import { GlobalSearch } from '@/src/components/shell/GlobalSearch';
 import { MobileBottomNav } from '@/src/components/shell/MobileBottomNav';
 import { AIDrawer } from '@/src/components/ai/AIDrawer';
@@ -108,6 +109,7 @@ const AppContent: React.FC = () => {
 
         {/* Dynamic Route Workspace with Smooth Page Transition */}
         <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto animate-in fade-in duration-200">
+          <Breadcrumbs />
           {renderView()}
         </main>
 

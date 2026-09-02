@@ -3,7 +3,6 @@ import {
   Search,
   Bell,
   Sparkles,
-  ChevronRight,
   ShieldCheck,
   CheckCircle,
   AlertTriangle,
@@ -19,7 +18,7 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
-  const { breadcrumbs, navigate, openAiDrawer, openCommandPalette } = useNavigation();
+  const { navigate, openAiDrawer, openCommandPalette } = useNavigation();
   const { user } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -33,41 +32,24 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSearch }) => {
     <>
       <header className="sticky top-2 sm:top-4 z-30 mb-4 md:mb-6 px-3 sm:px-6 lg:px-8 max-w-7xl w-full mx-auto transition-all duration-300">
         <div className="glass-panel-elevated rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between border border-[#AACBC4]/25 shadow-lg gap-2 sm:gap-4">
-          {/* Breadcrumbs & Title */}
-          <div className="flex items-center space-x-2 overflow-hidden">
+          {/* Workspace Identity & Mobile Menu Toggle */}
+          <div className="flex items-center space-x-2.5 overflow-hidden">
             <button
               onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="md:hidden p-2 rounded-full text-[#AACBC4] hover:text-[#F1F7F6] hover:bg-[#08453A] cursor-pointer hover:cursor-pointer transition-colors"
+              className="md:hidden p-2 rounded-full text-[#AACBC4] hover:text-[#F1F7F6] hover:bg-[#08453A] cursor-pointer hover:cursor-pointer transition-colors shrink-0"
+              aria-label="Open mobile navigation"
             >
               <Menu className="w-5 h-5" />
             </button>
 
-            <div className="hidden sm:flex items-center space-x-1.5 text-xs text-[#AACBC4]">
-              <span
-                onClick={() => navigate('/overview')}
-                className="hover:text-[#00DF81] cursor-pointer hover:cursor-pointer transition-colors font-medium"
-              >
-                NYAYO Ops
+            <div className="flex items-center space-x-2">
+              <span className="w-2 h-2 rounded-full bg-[#00DF81] animate-pulse shrink-0" />
+              <span className="text-xs font-mono font-medium tracking-wider text-[#AACBC4] uppercase hidden sm:inline">
+                Candor Command Console
               </span>
-              {breadcrumbs.map((bc, idx) => (
-                <React.Fragment key={bc.path}>
-                  <ChevronRight className="w-3.5 h-3.5 text-[#AACBC4]/40" />
-                  <span
-                    onClick={() => navigate(bc.path)}
-                    className={`${
-                      idx === breadcrumbs.length - 1
-                        ? 'text-[#F1F7F6] font-semibold'
-                        : 'hover:text-[#00DF81] cursor-pointer hover:cursor-pointer'
-                    } transition-colors truncate max-w-[140px]`}
-                  >
-                    {bc.label}
-                  </span>
-                </React.Fragment>
-              ))}
-            </div>
-
-            <div className="sm:hidden font-serif-heading text-sm font-semibold text-[#F1F7F6]">
-              {breadcrumbs[breadcrumbs.length - 1]?.label || 'Command Center'}
+              <span className="text-xs font-semibold text-[#F1F7F6] sm:hidden truncate">
+                Candor
+              </span>
             </div>
           </div>
 
