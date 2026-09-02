@@ -161,7 +161,7 @@ export const FloatingSidebar: React.FC<FloatingSidebarProps> = ({
       </div>
 
       {/* 2. Navigation Items (Categorized with subtle section headings) */}
-      <div className="flex-1 space-y-4 py-1 pr-1 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto space-y-4 py-1 pr-1 scrollbar-thin">
         {/* Section: Command Center */}
         <div className="space-y-1">
           {isEffectiveExpanded && (
