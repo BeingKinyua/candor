@@ -1,8 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+'use client';
+
+import React, { createContext, useContext, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { campaignStore } from '@/src/lib/services/store';
 
 export interface RouteState {
-  path: string; // e.g., '/overview', '/people', '/people/per-101', '/field/submissions/fs-8842', '/login'
+  path: string;
   params: Record<string, string>;
   title: string;
 }
@@ -25,32 +28,17 @@ interface NavigationContextType {
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
 
 export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentPath, setCurrentPath] = useState<string>('/overview');
+  const router = useRouter();
+  const pathname = usePathname();
+  const currentPath = pathname || '/overview';
+
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [aiInitialPrompt, setAiInitialPrompt] = useState<string | null>(null);
 
-  // Sync with browser hash / location if available
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace(/^#/, '');
-      if (hash) {
-        setCurrentPath(hash);
-      }
-    };
-
-    if (window.location.hash) {
-      handleHashChange();
-    }
-
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
-
   const navigate = (path: string) => {
-    setCurrentPath(path);
+    router.push(path);
     if (typeof window !== 'undefined') {
-      window.location.hash = path;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -74,11 +62,11 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const closeCommandPalette = () => setIsCommandPaletteOpen(false);
   const clearAiInitialPrompt = () => setAiInitialPrompt(null);
 
-  // Generate breadcrumbs
+  // Generate breadcrumbs from Next.js pathname
   const segments = currentPath.split('/').filter(Boolean);
   const breadcrumbs: { label: string; path: string }[] = [];
   let accumulated = '';
-  
+
   segments.forEach((seg) => {
     accumulated += `/${seg}`;
     let label = seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, ' ');
@@ -95,6 +83,8 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       label = 'Field Operations';
     } else if (seg === 'capture') {
       label = 'Form Capture';
+    } else if (seg === 'digital') {
+      label = 'Digital Capture';
     } else if (seg === 'submissions') {
       label = 'Submissions';
     } else if (seg === 'knowledge') {
@@ -105,8 +95,16 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       label = 'Settings';
     } else if (seg === 'team') {
       label = 'Team Governance';
+    } else if (seg === 'roles') {
+      label = 'Roles & Permissions';
+    } else if (seg === 'security') {
+      label = 'Security & Encryption';
     } else if (seg === 'audit') {
       label = 'Security Audit';
+    } else if (seg === 'unauthorized') {
+      label = 'Access Denied';
+    } else if (seg === 'edit') {
+      label = 'Edit';
     } else if (seg.startsWith('per-')) {
       const p = campaignStore.getPerson(seg);
       label = p ? p.fullName : 'Person Profile';

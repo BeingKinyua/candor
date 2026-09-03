@@ -24,11 +24,14 @@ import { Button, Badge, Input } from '@/src/components/ui/Controls';
 import { GlassCard, BentoCard } from '@/src/components/ui/Cards';
 import { Modal } from '@/src/components/ui/Feedback';
 
-export const PersonDetailView: React.FC<{ personId: string }> = ({ personId }) => {
+export const PersonDetailView: React.FC<{ personId: string; initialEditMode?: boolean }> = ({
+  personId,
+  initialEditMode = false,
+}) => {
   const { navigate, openAiDrawer } = useNavigation();
   const { can } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'commitments' | 'meetings' | 'issues'>('overview');
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(initialEditMode);
 
   const person = campaignStore.getPerson(personId);
 
