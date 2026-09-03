@@ -55,10 +55,13 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         }`}
       >
         {/* Top Operational Navigation */}
-        <Navbar onOpenSearch={() => setIsSearchOpen(true)} />
+        <Navbar
+          isSidebarCollapsed={isSidebarCollapsed}
+          onOpenSearch={() => setIsSearchOpen(true)}
+        />
 
-        {/* Dynamic Route Workspace with Smooth Page Transition */}
-        <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto animate-in fade-in duration-200">
+        {/* Dynamic Route Workspace with Smooth Page Transition and Fixed Navbar Clearance */}
+        <main className="flex-1 pt-20 sm:pt-22 md:pt-24 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto animate-in fade-in duration-200">
           <Breadcrumbs />
           {children}
         </main>

@@ -24,7 +24,7 @@ export default function RootPage() {
         <span className="font-serif-heading text-xl font-bold text-[#00DF81]">C</span>
       </div>
       <p className="text-xs font-mono text-[#AACBC4] tracking-wide animate-pulse">
-        Initializing Vantage Campaign Operations...
+        Initializing CANDOR...
       </p>
     </div>
   );
